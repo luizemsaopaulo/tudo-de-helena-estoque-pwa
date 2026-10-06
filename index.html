@@ -118,7 +118,8 @@
     <div class="modal-head"><div><p class="eyebrow">LOCAÇÃO</p><h2>Nova locação</h2></div><button type="button" class="x" data-close="rentalDialog">×</button></div>
     <div class="form-grid">
       <label class="field full"><span>Cliente *</span><input id="clientName" required maxlength="100" placeholder="Nome do cliente"></label>
-      <label class="field"><span>WhatsApp</span><input id="clientPhone" inputmode="tel" maxlength="30" placeholder="(11) 99999-9999"></label>
+      <label class="field"><span>WhatsApp</span><input id="clientPhone" type="tel" inputmode="tel" maxlength="30" placeholder="(11) 99999-9999"></label>
+      <div class="field full contact-picker"><span>Contato do cliente</span><button type="button" class="btn secondary" id="pickContactBtn">📇 Selecionar contato do telefone</button><small>Ou digite o nome e o WhatsApp manualmente.</small></div>
       <label class="field"><span>Data da festa *</span><input id="partyDate" required type="date"></label>
       <label class="field"><span>Retirada</span><input id="pickupDate" type="date"></label>
       <label class="field"><span>Devolução *</span><input id="returnDate" required type="date"></label>
