@@ -1,149 +1,17 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#684052">
-  <meta name="description" content="Controle de estoque e locações da Tudo de Helena">
-  <title>Tudo de Helena • Estoque</title>
-  <link rel="manifest" href="manifest.webmanifest?v=4">
-  <link rel="icon" href="assets/icon-helena-v2-192.png?v=4">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon-v2.png?v=4">
-  <link rel="stylesheet" href="css/styles.css?v=4">
-</head>
-<body>
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand">
-      <img src="assets/icon-helena-v2-192.png" alt="">
-      <div><strong>Tudo de Helena</strong><span>Estoque & Locações</span></div>
-    </div>
-    <nav class="nav">
-      <button class="nav-btn active" data-view="dashboard">⌂ <span>Visão geral</span></button>
-      <button class="nav-btn" data-view="products">▣ <span>Estoque</span></button>
-      <button class="nav-btn" data-view="rentals">♡ <span>Locações</span></button>
-      <button class="nav-btn" data-view="backup">↕ <span>Backup</span></button>
-    </nav>
-    <div class="side-foot"><span class="dot"></span> Dados salvos neste aparelho</div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <div><p class="eyebrow">TUDO DE HELENA</p><h1 id="pageTitle">Visão geral</h1></div>
-      <div class="top-actions">
-        <button class="btn ghost hidden" id="installBtn">⬇ Instalar app</button>
-        <button class="btn primary" data-open-product>＋ Nova peça</button>
-      </div>
-    </header>
-
-    <section class="view active" id="view-dashboard">
-      <article class="hero">
-        <div><span>GESTÃO DO ACERVO</span><h2>Seu estoque de festas, organizado de verdade.</h2><p>Fotos, disponibilidade, locações, clientes e retorno de cada peça em um só lugar.</p></div>
-        <button class="btn light" data-open-product>＋ Cadastrar peça</button>
-      </article>
-      <div class="stats">
-        <article><span>Modelos cadastrados</span><strong id="statModels">0</strong><small>Itens diferentes</small></article>
-        <article><span>Unidades disponíveis</span><strong id="statAvailable">0</strong><small>Prontas para locação</small></article>
-        <article><span>Unidades em locação</span><strong id="statRented">0</strong><small>Fora do estoque</small></article>
-        <article class="dark"><span>Retorno acumulado</span><strong id="statReturn">R$ 0,00</strong><small>Estimativa pelas locações registradas</small></article>
-      </div>
-      <div class="dash-grid">
-        <article class="panel">
-          <div class="panel-head"><div><p class="eyebrow">AGENDA</p><h3>Locações em andamento</h3></div><button class="link" data-go="rentals">Ver todas →</button></div>
-          <div id="dashRentals" class="list empty"><b>♡</b><span>Nenhuma locação ativa.</span></div>
-        </article>
-        <article class="panel">
-          <div class="panel-head"><div><p class="eyebrow">DESEMPENHO</p><h3>Peças que mais retornaram</h3></div></div>
-          <div id="dashTop" class="list empty"><b>☆</b><span>Cadastre peças para acompanhar.</span></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="view" id="view-products">
-      <div class="toolbar">
-        <label class="search">⌕ <input id="productSearch" type="search" placeholder="Buscar por nome ou categoria..."></label>
-        <select id="productFilter"><option value="all">Todos</option><option value="available">Com disponibilidade</option><option value="rented">Em locação</option></select>
-        <button class="btn primary" data-open-product>＋ Cadastrar peça</button>
-      </div>
-      <div id="productsGrid" class="product-grid"></div>
-    </section>
-
-    <section class="view" id="view-rentals">
-      <div class="toolbar spread"><p class="muted">Cadastre cliente, datas e selecione as peças pelo nome.</p><button class="btn primary" data-open-rental>＋ Nova locação</button></div>
-      <div class="tabs"><button class="tab active" data-rfilter="active">Ativas</button><button class="tab" data-rfilter="finished">Finalizadas</button><button class="tab" data-rfilter="all">Todas</button></div>
-      <div id="rentalsList" class="rental-list"></div>
-    </section>
-
-    <section class="view" id="view-backup">
-      <div class="backup-grid">
-        <article class="panel backup-card"><div class="big-icon">⇩</div><h3>Exportar backup</h3><p>Baixe produtos, fotos e locações em um arquivo JSON.</p><button class="btn primary" id="exportBtn">Baixar backup</button></article>
-        <article class="panel backup-card"><div class="big-icon">⇧</div><h3>Importar backup</h3><p>Restaure um arquivo anterior. A importação substitui os dados atuais.</p><label class="btn secondary file-btn">Escolher arquivo<input id="importFile" type="file" accept=".json,application/json" hidden></label></article>
-      </div>
-      <article class="panel danger-zone"><div><p class="eyebrow">SEGURANÇA</p><h3>Armazenamento local</h3><p>Os dados ficam no navegador deste aparelho. Faça backups antes de limpar os dados do navegador ou trocar de celular.</p></div><button class="btn danger" id="clearBtn">Apagar todos os dados</button></article>
-    </section>
-  </main>
-</div>
-
-<nav class="mobile-nav">
-  <button class="mobile-btn active" data-view="dashboard">⌂<span>Início</span></button>
-  <button class="mobile-btn" data-view="products">▣<span>Estoque</span></button>
-  <button class="mobile-btn" data-view="rentals">♡<span>Locações</span></button>
-  <button class="mobile-btn" data-view="backup">↕<span>Backup</span></button>
-</nav>
-
-<dialog id="productDialog" class="modal">
-  <form id="productForm" class="modal-card">
-    <div class="modal-head"><div><p class="eyebrow">ESTOQUE</p><h2 id="productDialogTitle">Cadastrar peça</h2></div><button type="button" class="x" data-close="productDialog">×</button></div>
-    <input type="hidden" id="productId">
-    <div class="photo-row">
-      <label class="photo-box" for="productPhoto"><img id="photoPreview" hidden alt=""><div id="photoPlaceholder">📷<strong>Adicionar foto</strong><small>Escolha ou tire uma foto</small></div></label>
-      <input id="productPhoto" type="file" accept="image/*" capture="environment" hidden>
-      <button type="button" class="link hidden" id="removePhoto">Remover foto</button>
-    </div>
-    <div class="form-grid">
-      <label class="field full"><span>Nome da peça *</span><input id="productName" required maxlength="100" placeholder="Ex.: Boleira Cake Popi 18 cm"></label>
-      <label class="field"><span>Categoria</span><input id="productCategory" maxlength="60" placeholder="Ex.: Bandejas"></label>
-      <label class="field"><span>Quantidade total *</span><input id="productQty" required type="number" min="1" step="1" value="1"></label>
-      <label class="field"><span>Custo da peça</span><input id="productCost" type="number" min="0" step="0.01" placeholder="0,00"></label>
-      <label class="field"><span>Valor por locação *</span><input id="productPrice" required type="number" min="0" step="0.01" placeholder="0,00"></label>
-      <label class="field"><span>Nº de locações anteriores</span><input id="productPast" type="number" min="0" step="1" value="0"></label>
-      <label class="field full"><span>Observações</span><textarea id="productNotes" rows="3" maxlength="400" placeholder="Medidas, cor, conjunto, cuidados..."></textarea></label>
-    </div>
-    <div class="actions"><button type="button" class="btn ghost" data-close="productDialog">Cancelar</button><button class="btn primary" type="submit">Salvar peça</button></div>
-  </form>
-</dialog>
-
-<dialog id="rentalDialog" class="modal">
-  <form id="rentalForm" class="modal-card wide">
-    <div class="modal-head"><div><p class="eyebrow">LOCAÇÃO</p><h2>Nova locação</h2></div><button type="button" class="x" data-close="rentalDialog">×</button></div>
-    <div class="form-grid">
-      <label class="field full"><span>Cliente *</span><input id="clientName" required maxlength="100" placeholder="Nome do cliente"></label>
-      <label class="field"><span>WhatsApp</span><input id="clientPhone" type="tel" inputmode="tel" maxlength="30" placeholder="(11) 99999-9999"></label>
-      <div class="field full contact-picker"><span>Contato do cliente</span><button type="button" class="btn secondary" id="pickContactBtn">📇 Selecionar contato do telefone</button><small>Ou digite o nome e o WhatsApp manualmente.</small></div>
-      <label class="field"><span>Data da festa *</span><input id="partyDate" required type="date"></label>
-      <label class="field"><span>Retirada</span><input id="pickupDate" type="date"></label>
-      <label class="field"><span>Devolução *</span><input id="returnDate" required type="date"></label>
-    </div>
-    <div class="builder">
-      <div><strong>Peças da locação</strong><small>Digite o nome para pesquisar e selecionar.</small></div>
-      <div class="add-row">
-        <label class="field grow"><span>Produto</span><input id="rentalProductSearch" list="productOptions" autocomplete="off" placeholder="Digite o nome da peça..."><datalist id="productOptions"></datalist></label>
-        <label class="field qty"><span>Qtd.</span><input id="rentalProductQty" type="number" min="1" step="1" value="1"></label>
-        <button class="btn secondary add-item" type="button" id="addRentalItem">Adicionar</button>
-      </div>
-      <div id="rentalItems" class="rental-items"><div class="inline-empty">Nenhuma peça adicionada.</div></div>
-    </div>
-    <label class="field"><span>Observações</span><textarea id="rentalNotes" rows="3" maxlength="500" placeholder="Entrega, sinal, endereço, detalhes da festa..."></textarea></label>
-    <div class="total-row"><span>Total previsto</span><strong id="rentalTotal">R$ 0,00</strong></div>
-    <div class="actions"><button type="button" class="btn ghost" data-close="rentalDialog">Cancelar</button><button class="btn primary" type="submit">Salvar locação</button></div>
-  </form>
-</dialog>
-
-<dialog id="confirmDialog" class="confirm">
-  <div class="confirm-card"><div class="confirm-mark">!</div><h3 id="confirmTitle">Confirmar ação</h3><p id="confirmMessage"></p><div class="actions"><button class="btn ghost" id="confirmCancel">Cancelar</button><button class="btn primary" id="confirmOk">Confirmar</button></div></div>
-</dialog>
-
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="js/app.js" defer></script>
-</body>
-</html>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#684052"><title>Tudo de Helena • Estoque</title><link rel="manifest" href="manifest.webmanifest?v=5"><link rel="icon" href="assets/icon-helena-v2-192.png?v=5"><link rel="stylesheet" href="css/styles.css?v=5"></head><body>
+<div class="app-shell"><aside class="sidebar"><div class="brand"><img src="assets/icon-helena-v2-192.png"><div><strong>Tudo de Helena</strong><span>Estoque & Locações</span></div></div><nav class="nav"><button class="nav-btn active" data-view="dashboard">⌂ <span>Visão geral</span></button><button class="nav-btn" data-view="products">▣ <span>Estoque</span></button><button class="nav-btn" data-view="rentals">♡ <span>Orçamentos</span></button><button class="nav-btn" data-view="consumables">○ <span>Balões / Consumíveis</span></button><button class="nav-btn" data-view="finance">R$ <span>Financeiro</span></button><button class="nav-btn" data-view="backup">↕ <span>Backup</span></button></nav><div class="side-foot"><span class="dot"></span> Dados salvos neste aparelho</div></aside>
+<main class="main"><header class="topbar"><div><p class="eyebrow">TUDO DE HELENA</p><h1 id="pageTitle">Visão geral</h1></div><div class="top-actions"><button class="btn primary" data-open-product>＋ Nova peça</button></div></header>
+<section class="view active" id="view-dashboard"><article class="hero"><div><span>GESTÃO DO ACERVO</span><h2>Seu estoque e suas locações em um só lugar.</h2><p>Controle peças, consumíveis, orçamentos, reservas e retorno financeiro.</p></div><button class="btn light" data-open-rental>＋ Novo orçamento</button></article><div class="stats"><article><span>Modelos cadastrados</span><strong id="statModels">0</strong><small>Peças diferentes</small></article><article><span>Unidades disponíveis hoje</span><strong id="statAvailable">0</strong><small>Considerando reservas</small></article><article><span>Locações reservadas</span><strong id="statRented">0</strong><small>Confirmadas</small></article><article class="dark"><span>Faturamento das peças</span><strong id="statReturn">R$ 0,00</strong><small>Somente locações confirmadas</small></article></div><article class="panel" id="dashSummary"></article></section>
+<section class="view" id="view-products"><div class="toolbar"><label class="search">⌕ <input id="productSearch" type="search" placeholder="Buscar por nome ou categoria..."></label><button class="btn primary" data-open-product>＋ Cadastrar peça</button></div><div id="productsGrid" class="product-grid"></div></section>
+<section class="view" id="view-rentals"><div class="toolbar spread"><p class="muted">Orçamento não reserva estoque. Confirme somente quando o cliente fechar.</p><button class="btn primary" data-open-rental>＋ Novo orçamento</button></div><div id="rentalsList" class="rental-list"></div></section>
+<section class="view" id="view-consumables"><div class="toolbar spread"><p class="muted">Balões e materiais consumidos são calculados por unidade utilizada.</p><button class="btn primary" data-open-cons>＋ Novo consumível</button></div><div id="consumablesGrid" class="product-grid"></div></section>
+<section class="view" id="view-finance"><div id="financeContent"></div></section>
+<section class="view" id="view-backup"><div class="backup-grid"><article class="panel backup-card"><div class="big-icon">⇩</div><h3>Exportar backup</h3><p>Baixe peças, fotos, consumíveis e locações.</p><button class="btn primary" id="exportBtn">Baixar backup</button></article><article class="panel backup-card"><div class="big-icon">⇧</div><h3>Importar backup</h3><p>Importe backups atuais ou anteriores.</p><label class="btn secondary file-btn">Escolher arquivo<input id="importFile" type="file" accept=".json,application/json" hidden></label></article></div></section></main></div>
+<nav class="mobile-nav"><button class="mobile-btn active" data-view="dashboard">⌂<span>Início</span></button><button class="mobile-btn" data-view="products">▣<span>Estoque</span></button><button class="mobile-btn" data-view="rentals">♡<span>Orçamentos</span></button><button class="mobile-btn" data-view="consumables">○<span>Balões</span></button><button class="mobile-btn" data-view="finance">$<span>Financeiro</span></button><button class="mobile-btn" data-view="backup">↕<span>Backup</span></button></nav>
+<dialog id="productDialog" class="modal"><form id="productForm" class="modal-card"><div class="modal-head"><div><p class="eyebrow">ESTOQUE</p><h2>Cadastrar peça</h2></div><button type="button" class="x" data-close="productDialog">×</button></div><input type="hidden" id="productId"><div class="form-grid"><label class="field full"><span>Nome da peça *</span><input id="productName" required></label><label class="field"><span>Categoria</span><input id="productCategory"></label><label class="field"><span>Quantidade total *</span><input id="productQty" required type="number" inputmode="numeric" min="1" value="1"></label><label class="field"><span>Valor pago por unidade</span><input id="productCost" type="number" inputmode="decimal" min="0" step="0.01"></label><label class="field"><span>Valor por aluguel *</span><input id="productPrice" required type="number" inputmode="decimal" min="0" step="0.01"></label><label class="field"><span>Locações anteriores</span><input id="productPast" type="number" inputmode="numeric" min="0" value="0"></label></div><div class="compact-photo"><img id="photoPreview" hidden><div id="photoPlaceholder">Nenhuma foto selecionada</div><div class="photo-buttons"><label class="btn secondary">📷 Câmera<input id="cameraInput" type="file" accept="image/*" capture="environment" hidden></label><label class="btn secondary">🖼 Galeria<input id="galleryInput" type="file" accept="image/*" hidden></label></div><div id="photoActions" class="hidden"><button type="button" class="link" id="removePhoto">Remover foto</button></div></div><div class="actions"><button type="button" class="btn ghost" data-close="productDialog">Cancelar</button><button class="btn primary">Salvar peça</button></div></form></dialog>
+<dialog id="rentalDialog" class="modal"><form id="rentalForm" class="modal-card wide"><div class="modal-head"><div><p class="eyebrow">ORÇAMENTO</p><h2>Novo orçamento</h2></div><button type="button" class="x" data-close="rentalDialog">×</button></div><div class="form-grid"><label class="field full"><span>Cliente *</span><input id="clientName" required></label><label class="field"><span>WhatsApp</span><input id="clientPhone" type="tel"></label><label class="field"><span>Data da festa *</span><input id="partyDate" required type="date"></label><label class="field"><span>Retirada</span><input id="pickupDate" type="date"></label><label class="field"><span>Devolução</span><input id="returnDate" type="date"></label><label class="field"><span>CEP</span><input id="cep" inputmode="numeric"></label><label class="field full"><span>Endereço</span><input id="address"></label><label class="field"><span>Número</span><input id="number"></label><label class="field"><span>Bairro</span><input id="district"></label><label class="field"><span>Cidade</span><input id="city"></label><label class="field"><span>Complemento</span><input id="complement"></label></div>
+<div class="builder"><strong>Peças de locação</strong><div class="add-row"><label class="field grow"><span>Produto</span><input id="rentalProductSearch" list="productOptions"><datalist id="productOptions"></datalist></label><label class="field qty"><span>Qtd.</span><input id="rentalProductQty" type="number" min="1" value="1"></label><button type="button" class="btn secondary add-item" id="addRentalItem">Adicionar</button></div><div id="rentalItems" class="rental-items"></div></div>
+<div class="builder"><strong>Balões / Consumíveis utilizados</strong><div class="add-row"><label class="field grow"><span>Consumível</span><input id="rentalConsSearch" list="consOptions"><datalist id="consOptions"></datalist></label><label class="field qty"><span>Qtd.</span><input id="rentalConsQty" type="number" min="1" value="1"></label><button type="button" class="btn secondary add-item" id="addConsItem">Adicionar</button></div><div id="consItems" class="rental-items"></div></div>
+<label class="field"><span>Frete / deslocamento</span><input id="freight" type="number" inputmode="decimal" min="0" step="0.01" value="0"></label><label class="field"><span>Observações</span><textarea id="rentalNotes" rows="3"></textarea></label><div class="quote-summary"><div><span>Peças</span><strong id="sumPieces">R$ 0,00</strong></div><div><span>Acréscimo de 30%</span><strong id="sumFee">R$ 0,00</strong></div><div><span>Consumíveis utilizados</span><strong id="sumCons">R$ 0,00</strong></div><div><span>Frete</span><strong id="sumFreight">R$ 0,00</strong></div><div class="grand"><span>TOTAL FINAL</span><strong id="rentalTotal">R$ 0,00</strong></div></div><div class="actions"><button type="button" class="btn ghost" data-close="rentalDialog">Cancelar</button><button class="btn primary">Salvar orçamento</button></div></form></dialog>
+<dialog id="consDialog" class="modal"><form id="consForm" class="modal-card"><div class="modal-head"><div><p class="eyebrow">CONSUMÍVEIS</p><h2>Balão / material de consumo</h2></div><button type="button" class="x" data-close="consDialog">×</button></div><input id="consId" type="hidden"><div class="form-grid"><label class="field"><span>Marca *</span><input id="consBrand" required placeholder="Ex.: Pique Pique"></label><label class="field"><span>Linha / modelo</span><input id="consModel"></label><label class="field"><span>Cor *</span><input id="consColor" required></label><label class="field"><span>Tamanho</span><input id="consSize"></label><label class="field"><span>Qtd. no pacote *</span><input id="consPackQty" required type="number" min="1"></label><label class="field"><span>Valor pago no pacote *</span><input id="consPackPrice" required type="number" min="0" step=".01"></label><label class="field"><span>Estoque atual em unidades *</span><input id="consStock" required type="number" min="0"></label><label class="field"><span>Avisar estoque baixo em</span><input id="consLowAt" type="number" min="0" value="10"></label></div><div class="actions"><button type="button" class="btn ghost" data-close="consDialog">Cancelar</button><button class="btn primary">Salvar consumível</button></div></form></dialog>
+<dialog id="photoDialog" class="modal"><div class="modal-card photo-modal"><button type="button" class="x" data-close="photoDialog">×</button><img id="photoLarge"></div></dialog><div id="toast" class="toast"></div><script src="js/app.js?v=5" defer></script></body></html>
