@@ -1,0 +1,25 @@
+TUDO DE HELENA - ESTOQUE & LOCACOES
+====================================
+
+Estrutura:
+- index.html
+- css\styles.css
+- js\app.js
+- manifest.webmanifest
+- sw.js
+- assets\icones PNG
+
+Para abrir no computador:
+1. Clique duas vezes em ABRIR_TUDO_DE_HELENA.bat
+2. O navegador abre em http://localhost:8765
+3. Mantenha a janela preta aberta enquanto usar localmente.
+
+No celular:
+- Use a versao publicada em HTTPS.
+- Abra no Chrome.
+- Toque em "Instalar app" quando o botao aparecer.
+- Se nao aparecer, menu ⋮ > Instalar app ou Adicionar a tela inicial.
+
+Dados:
+- Produtos, fotos e locacoes ficam no proprio aparelho via IndexedDB.
+- Use a aba Backup para exportar um arquivo JSON periodicamente.
