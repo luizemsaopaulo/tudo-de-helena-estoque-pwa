@@ -29,3 +29,15 @@
 .compact-photo{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;gap:10px;justify-items:center}.compact-photo>img{width:88px;height:88px;border-radius:14px;object-fit:cover}.compact-photo>#photoPlaceholder{font-size:12px;color:var(--muted)}.photo-buttons{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .quote-summary{margin-top:16px;border:1px solid var(--line);border-radius:16px;overflow:hidden}.quote-summary>div{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line)}.quote-summary .grand{background:#30252a;color:white;border:0;padding:15px}.quote-summary .grand strong{font-size:21px}.breakdown{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.breakdown span{font-size:10px;background:var(--card2);padding:6px 9px;border-radius:999px}.finance-stats{margin-top:0}.photo-modal{width:min(700px,calc(100vw - 28px));position:relative}.photo-modal>.x{position:absolute;right:12px;top:12px;z-index:2}.photo-modal img{max-height:80vh;margin:auto;border-radius:16px}.mobile-nav{grid-template-columns:repeat(6,1fr)!important}
 @media(max-width:760px){.summary-grid{grid-template-columns:1fr}.mobile-nav{left:5px;right:5px;bottom:5px;padding:5px}.mobile-btn{min-height:48px;font-size:15px}.mobile-btn span{font-size:8px}.compact-photo{position:relative}.modal-card{padding-bottom:max(20px,env(safe-area-inset-bottom))}.field input,.field textarea{font-size:16px}.quote-summary{margin-bottom:4px}.rental-save-actions{display:grid;grid-template-columns:1fr 1fr}.rental-save-actions .whatsapp-btn{grid-column:1/-1;width:100%}}
+
+/* Cloudflare private-sync controls */
+.helena-cloud-button{font-size:.83rem;white-space:nowrap;max-width:170px;overflow:hidden;text-overflow:ellipsis}
+.helena-cloud-button.connected{color:#17764b;border-color:#b3ddc7}
+.helena-cloud-button.error{color:#a53a39;border-color:#e1b3b0}
+.helena-cloud-button.warning{color:#936009}
+.helena-cloud-card{max-width:530px}
+.cloud-help{font-size:.9rem;line-height:1.5;color:#725b65;margin:0 0 12px}
+.cloud-message{font-size:.84rem;font-weight:600;color:#724350;word-break:break-word}
+.cloud-choices{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0}
+.cloud-choices .btn{white-space:normal;text-align:center}
+@media(max-width:550px){.helena-cloud-button{max-width:115px;padding:9px 7px;font-size:12px}.cloud-choices{flex-direction:column}.cloud-choices .btn{width:100%}}

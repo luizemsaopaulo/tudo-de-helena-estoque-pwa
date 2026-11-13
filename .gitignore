@@ -1,0 +1,8 @@
+.wrangler/
+.dev.vars
+.env
+.env.*
+*.log
+cloudflare/patch_app.py
+cloudflare/test-worker.mjs
+cloudflare/test-browser.mjs

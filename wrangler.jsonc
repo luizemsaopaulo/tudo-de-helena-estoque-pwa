@@ -1,0 +1,13 @@
+{
+  "name": "tudo-de-helena-estoque-api",
+  "main": "./cloudflare/worker.js",
+  "compatibility_date": "2026-11-10",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tudo-de-helena-estoque-db",
+      "database_id": "a07fd805-124a-4853-859b-4ae35f9e5ff3"
+    }
+  ]
+}
