@@ -3,7 +3,9 @@
 - Front-end público: GitHub Pages (mesmo endereço anterior).
 - API privada: Cloudflare Workers (`tudo-de-helena-estoque-api`).
 - Banco: Cloudflare D1 (`tudo-de-helena-estoque-db`).
-- Conta Cloudflare: conta de trabalho autenticada no Wrangler (não incluir dados da conta no repositório público).
+- Conta Cloudflare: `luizwaldemarmotorol@gmail.com` (conta atual).
+- Worker publicado: `https://tudo-de-helena-estoque-api.luizemsaopaulo.workers.dev`.
+- Banco de produção: ID `d596b019-cb7c-427e-8272-3259409cd054`.
 - Código de API: `cloudflare/worker.js`.
 - Acesso: senha do servidor em segredo `ADMIN_PASSWORD` (NUNCA commitar a senha).
 - Sessões: 30 dias; token aleatório de 256 bits, hash SHA-256 guardado no D1.

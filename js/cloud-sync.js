@@ -1,11 +1,11 @@
 "use strict";
 // Cloudflare D1 sync: local-first, explicit first migration and password-protected API.
 (function () {
-  const API = "https://tudo-de-helena-estoque-api.tudo-de-helena-lucilene.workers.dev";
+  const API = "https://tudo-de-helena-estoque-api.luizemsaopaulo.workers.dev";
   const TOKEN_KEY = "helena.cloud.token.v1";
   const BOOT_KEY = "helena.cloud.migrated.v1";
   const STORES = ["products", "rentals", "consumables", "history"];
-  let db, appRefresh, dbAll, enabled = false, busy = false, timer = null;
+  let db, appRefresh, dbAll, enabled = false, busy = false, mutating = 0, timer = null;
   let btn, panel, message, loginForm, choices, controls;
   const status = (label, css="") => {
     if (btn) { btn.textContent = "☁ " + (label.length>30?label.slice(0,29)+"…":label); btn.className = "btn ghost helena-cloud-button " + css; }
@@ -55,19 +55,32 @@
     if (photo.length>1600000) throw new Error("Foto muito grande para D1. Reduza a imagem antes de salvar.");
     return {...record,photo};
   }
-  async function enqueue(store, value, deleted = false) {
-    if (localStorage.getItem(BOOT_KEY)!=="1" || !STORES.includes(store)) return;
+  // The local record and its sync-queue entry share one IndexedDB transaction.
+  // No local change can be overwritten by a download before it has entered the queue.
+  async function persist(store, value, deleted = false) {
+    if (!STORES.includes(store) || !value?.id) throw new Error("Registro inválido.");
+    const registered = localStorage.getItem(BOOT_KEY)==="1";
+    mutating++;
     try {
-      const clean=deleted?undefined:await shrink(value,store);
-      const key=crypto.randomUUID();
+      const clean=registered && !deleted ? await shrink(value,store) : undefined;
       await new Promise((resolve,reject) => {
-        const tx=db.transaction("syncQueue","readwrite");
-        tx.objectStore("syncQueue").put({id:key,store,recordId:value.id,value:clean,deleted,createdAt:Date.now()});
-        tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+        const tx=db.transaction(registered?[store,"syncQueue"]:[store],"readwrite");
+        const table=tx.objectStore(store);
+        if(deleted) table.delete(value.id); else table.put(value);
+        if(registered) tx.objectStore("syncQueue").put({
+          id:crypto.randomUUID(),store,recordId:value.id,value:clean,deleted,createdAt:Date.now()
+        });
+        tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
       });
-      status(token()?"Pendente de sincronização":"Alterações locais pendentes");
-      if (token()) { clearTimeout(timer); timer=setTimeout(()=>syncNow(),600); }
-    } catch(e) { console.warn("Fila de sincronização:",e);status("Verificar sincronização","error"); }
+      if(registered) {
+        status(token()?"Pendente de sincronização":"Alterações locais pendentes");
+        if(token()) {clearTimeout(timer);timer=setTimeout(()=>syncNow(),600);}
+      }
+    } catch(e) {
+      console.warn("Falha ao salvar no estoque local:",e);
+      status("Erro ao salvar: "+errorText(e),"error");
+      throw e;
+    } finally { mutating--; }
   }
   function backupLocal() {
     const data = {version:3,products:[],rentals:[],consumables:[],history:[]};
@@ -91,7 +104,7 @@
   }
   async function replaceFromCloud(data) {
     if (!data || !STORES.every(store=>Array.isArray(data[store]))) throw new Error("Backup remoto inválido.");
-    if ((await getAllQueued()).length) throw new Error("Há alterações locais pendentes; download adiado.");
+    if (mutating || (await getAllQueued()).length) throw new Error("Há alterações locais pendentes; download adiado.");
     await new Promise((resolve,reject)=>{
       const tx=db.transaction(STORES,"readwrite");
       for (const store of STORES) {
@@ -103,7 +116,7 @@
     await appRefresh();
   }
   async function syncNow() {
-    if (!enabled || !token() || busy) return;
+    if (!enabled || !token() || busy || mutating) return;
     if (!navigator.onLine) {status("Offline — dados locais","warning");return;}
     busy=true;status("Sincronizando...");
     try {
@@ -201,5 +214,5 @@
     window.addEventListener("online",()=>syncNow());
     document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")syncNow();});
   }
-  window.HelenaCloud={init,enqueue,syncNow,backupLocal};
+  window.HelenaCloud={init,persist,syncNow,backupLocal};
 })();
