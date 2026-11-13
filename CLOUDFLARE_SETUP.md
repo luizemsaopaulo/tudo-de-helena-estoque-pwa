@@ -11,6 +11,9 @@
 - Sessões: 30 dias; token aleatório de 256 bits, hash SHA-256 guardado no D1.
 - Bloqueio: 8 tentativas de senha por IP a cada 15 minutos.
 - Sincronização: local-first com fila IndexedDB; download do servidor a cada 30 segundos.
+- Segurança de dados: a atualização local e sua entrada na fila usam uma única transação; o recebimento da nuvem valida a fila dentro da transação de substituição para evitar sobrescrever edições pendentes.
+- Depuração no VS Code: abra o projeto e use **Executar e Depurar** (F5), selecionando `Depurar Tudo de Helena — site publicado` ou `— local`. O perfil local inicia automaticamente o servidor Python.
+- Verificações automatizadas no Lenovo (13/11/2026): JavaScript válido e teste de integração entre dois navegadores (cadastro, atualização offline, reconexão, exclusão e erros em console) aprovado usando API simulada. Testes anteriores da API Cloudflare de produção também foram aprovados.
 - **Primeira conexão:** o usuário deve escolher enviar os cadastros locais à nuvem ou usar o servidor. O aplicativo exporta backup JSON antes de qualquer substituição.
 - Importação inicial usa INSERT OR IGNORE; registros remotos existentes são mantidos em conflitos de IDs.
 - Excluir registro na nuvem mantém tombstone; dados locais só são reconciliados após envio das alterações pendentes.

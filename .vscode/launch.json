@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Depurar Tudo de Helena — site publicado",
+      "type": "pwa-msedge",
+      "request": "launch",
+      "url": "https://luizemsaopaulo.github.io/tudo-de-helena-estoque-pwa/",
+      "webRoot": "${workspaceFolder}",
+      "runtimeArgs": [
+        "--inprivate"
+      ]
+    },
+    {
+      "name": "Depurar Tudo de Helena — local",
+      "type": "pwa-msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:8766/",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Servidor local Tudo de Helena"
+    }
+  ]
+}

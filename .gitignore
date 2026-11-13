@@ -7,3 +7,5 @@ cloudflare/patch_app.py
 cloudflare/test-worker.mjs
 cloudflare/test-browser.mjs
 cloudflare/test-e2e.cjs
+cloudflare/test-mock.cjs
+.vscode/edge-debug-profile/

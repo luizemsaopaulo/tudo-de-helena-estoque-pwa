@@ -104,16 +104,28 @@
   }
   async function replaceFromCloud(data) {
     if (!data || !STORES.every(store=>Array.isArray(data[store]))) throw new Error("Backup remoto inválido.");
-    if (mutating || (await getAllQueued()).length) throw new Error("Há alterações locais pendentes; download adiado.");
-    await new Promise((resolve,reject)=>{
-      const tx=db.transaction(STORES,"readwrite");
-      for (const store of STORES) {
-        const obj=tx.objectStore(store);obj.clear();
-        for (const record of data[store]) if (record?.id) obj.put(record);
-      }
-      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+    if (mutating) return false;
+    // Check pending edits in the SAME transaction that replaces local data.
+    // A concurrent edit always serializes against this transaction.
+    const applied=await new Promise((resolve,reject)=>{
+      const tx=db.transaction([...STORES,"syncQueue"],"readwrite");
+      let changed=false;
+      const count=tx.objectStore("syncQueue").count();
+      count.onsuccess=()=>{
+        if(count.result || mutating) return;
+        for (const store of STORES) {
+          const obj=tx.objectStore(store);
+          obj.clear();
+          for (const record of data[store]) if (record?.id) obj.put(record);
+        }
+        changed=true;
+      };
+      tx.oncomplete=()=>resolve(changed);
+      tx.onerror=()=>reject(tx.error);
+      tx.onabort=()=>reject(tx.error || new Error("Falha ao aplicar a atualização da nuvem."));
     });
-    await appRefresh();
+    if(applied) await appRefresh();
+    return applied;
   }
   async function syncNow() {
     if (!enabled || !token() || busy || mutating) return;
@@ -128,7 +140,12 @@
         queue=await getAllQueued();
       }
       const result = await call("/api/snapshot");
-      if ((await getAllQueued()).length===0) await replaceFromCloud(result.data);
+      const applied=await replaceFromCloud(result.data);
+      if(!applied) {
+        status("Alterações locais pendentes","warning");
+        clearTimeout(timer);timer=setTimeout(()=>syncNow(),1200);
+        return;
+      }
       localStorage.setItem("helena.cloud.lastsync", new Date().toISOString());
       status("Sincronizado","connected");
     } catch(e) {

@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Servidor local Tudo de Helena",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "-u",
+        "-m",
+        "http.server",
+        "8766",
+        "--bind",
+        "127.0.0.1"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": ".*"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "Serving HTTP on"
+        }
+      }
+    },
+    {
+      "label": "Verificar sintaxe JavaScript",
+      "type": "shell",
+      "command": "node --check js/app.js; node --check js/cloud-sync.js; node --check cloudflare/worker.js",
+      "problemMatcher": []
+    }
+  ]
+}
