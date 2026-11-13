@@ -1,5 +1,6 @@
 {
   "name": "tudo-de-helena-estoque-api",
+  "account_id": "01ecc50b0e1833a2925104bc0a33d89d",
   "main": "./cloudflare/worker.js",
   "compatibility_date": "2026-11-10",
   "workers_dev": true,
