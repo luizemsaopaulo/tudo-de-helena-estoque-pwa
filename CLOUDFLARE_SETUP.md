@@ -5,7 +5,7 @@
 - Banco: Cloudflare D1 (`tudo-de-helena-estoque-db`).
 - Conta Cloudflare de destino: `lucileneluizwl@outlook.com` (Account ID `5491223693d8ab2f8073676e0df26469`).
 - Worker publicado na conta de destino: `https://tudo-de-helena-estoque-api.tudo-de-helena-luizwl.workers.dev`.
-- O certificado HTTPS do novo `workers.dev` foi ativado após a criação e `/api/health` retornou HTTP 200 com TLS válido. Antes de apontar o GitHub Pages para ele, concluir os testes autenticados com o PIN configurado. Até lá, a versão de produção continua na conta Luiz.
+- O certificado HTTPS do novo `workers.dev` foi ativado após a criação. `/api/health` retornou HTTP 200 com TLS válido; os testes de login com PIN, sessão, importação, atualização, exclusão, controle de origem e logout na API REAL passaram em 13/11/2026.
 - Banco D1 de destino: ID `26de154b-7f6f-4c95-a15a-6e6a3ce160a4` (novo, esquema aplicado).
 - Código de API: `cloudflare/worker.js`.
 - Acesso: senha do servidor em segredo `ADMIN_PASSWORD` (NUNCA commitar a senha).
@@ -17,7 +17,7 @@
 - Depuração no VS Code: abra o projeto e use **Executar e Depurar** (F5), selecionando `Depurar Tudo de Helena — site publicado` ou `— local`. O perfil local inicia automaticamente o servidor Python.
 - Verificações automatizadas no Lenovo (13/11/2026): JavaScript válido e teste de integração entre dois navegadores (cadastro, atualização offline, reconexão, exclusão e erros em console) aprovado usando API simulada. Testes anteriores da API Cloudflare de produção também foram aprovados.
 - **Primeira conexão:** o usuário deve escolher enviar os cadastros locais à nuvem ou usar o servidor. O aplicativo exporta backup JSON antes de qualquer substituição.
-- Nesta migração as chaves locais de autenticação e importação têm prefixo `helena.cloud.lucileneluizwl.*.v3`, para não confiar automaticamente na sessão da conta antiga. Importar dados do navegador com cadastro previamente existente; não apagar o banco antigo.
+- Nesta migração as chaves locais de autenticação e importação têm prefixo `helena.cloud.lucileneluizwl.*.v3`, para não confiar automaticamente na sessão da conta antiga. A fila de alterações do servidor anterior é limpa apenas após backup e importação (se selecionada), para impedir a reprodução de valores obsoletos na nova nuvem. Teste automatizado validou a importação de dados existentes, fila antiga e reconexão offline. Importar dados do navegador com cadastro previamente existente; não apagar o banco antigo.
 - Importação inicial usa INSERT OR IGNORE; registros remotos existentes são mantidos em conflitos de IDs.
 - Excluir registro na nuvem mantém tombstone; dados locais só são reconciliados após envio das alterações pendentes.
 - Limite do D1: 2 MB por registro; fotos grandes são redimensionadas a JPEG para sincronizar.

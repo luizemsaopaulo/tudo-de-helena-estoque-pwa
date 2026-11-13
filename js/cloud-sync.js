@@ -5,7 +5,7 @@
   const TOKEN_KEY = "helena.cloud.lucileneluizwl.token.v3";
   const BOOT_KEY = "helena.cloud.lucileneluizwl.migrated.v3";
   const STORES = ["products", "rentals", "consumables", "history"];
-  let db, appRefresh, dbAll, enabled = false, busy = false, mutating = 0, timer = null;
+  let db, appRefresh, dbAll, enabled = false, busy = false, mutating = 0, migrating = false, timer = null;
   let btn, panel, message, loginForm, choices, controls;
   const status = (label, css="") => {
     if (btn) { btn.textContent = "☁ " + (label.length>30?label.slice(0,29)+"…":label); btn.className = "btn ghost helena-cloud-button " + css; }
@@ -40,6 +40,17 @@
       tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
     });
   }
+  // The previous Cloudflare account's pending operations must never be replayed
+  // into this account. Migration imports the current local snapshot instead.
+  async function clearPreviousAccountQueue() {
+    return new Promise((resolve,reject) => {
+      const tx=db.transaction("syncQueue","readwrite");
+      tx.objectStore("syncQueue").clear();
+      tx.oncomplete=resolve;
+      tx.onerror=()=>reject(tx.error);
+      tx.onabort=()=>reject(tx.error);
+    });
+  }
   async function shrink(record, store) {
     if (store!=="products" || !record?.photo || record.photo.length < 550000 || !record.photo.startsWith("data:image/")) return record;
     const image = new Image();
@@ -58,6 +69,7 @@
   // The local record and its sync-queue entry share one IndexedDB transaction.
   // No local change can be overwritten by a download before it has entered the queue.
   async function persist(store, value, deleted = false) {
+    if (migrating) throw new Error("Migração da nuvem em andamento. Salve novamente quando terminar.");
     if (!STORES.includes(store) || !value?.id) throw new Error("Registro inválido.");
     const registered = localStorage.getItem(BOOT_KEY)==="1";
     mutating++;
@@ -181,15 +193,21 @@
     }
   }
   async function selectMigration(shouldImport) {
+    if(migrating) return;
+    migrating=true;
     try {
       choices.hidden=true;status("Criando backup local...");
       let count=0;for(const store of STORES)count+=(await dbAll(store)).length;
       if(count) await backupLocal();
       if(shouldImport) await importLocal();
+      // Old queued operations belong to the previous Cloudflare account.
+      // Do not replay stale values or deletes after importing this snapshot.
+      await clearPreviousAccountQueue();
       localStorage.setItem(BOOT_KEY,"1");
       enabled=true;controls.hidden=false;await syncNow();
       close();
     } catch(e) {choices.hidden=false;status("Erro: "+errorText(e),"error");}
+    finally {migrating=false;}
   }
   function makeDialog() {
     btn=document.createElement("button");btn.type="button";btn.className="btn ghost helena-cloud-button";
