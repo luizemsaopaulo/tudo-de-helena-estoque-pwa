@@ -35,8 +35,10 @@ async function login(req, env) {
   const ip = (req.headers.get("CF-Connecting-IP") || "unknown").slice(0,128);
   const cutoff = Date.now() - 15 * 60 * 1000;
   const blocked = await env.DB.prepare("SELECT COUNT(*) AS n FROM attempts WHERE ip=? AND time_ms>?").bind(ip,cutoff).first();
-  if (blocked?.n >= 8) return err("Muitas tentativas. Tente novamente em 15 minutos.",429);
-  if (!env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 20) return err("A senha do servidor não foi configurada.",503);
+  if (blocked?.n >= 5) return err("Muitas tentativas. Tente novamente em 15 minutos.",429);
+  const globalAttempts = await env.DB.prepare("SELECT COUNT(*) AS n FROM attempts WHERE time_ms>?").bind(cutoff).first();
+  if (globalAttempts?.n >= 80) return err("Limite temporário de tentativas atingido. Tente novamente em 15 minutos.",429);
+  if (!env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 6) return err("A senha do servidor não foi configurada.",503);
   const data = await readJSON(req, 3000);
   if (typeof data.password !== "string" || data.password.length > 512) return err("Senha inválida.");
   const approved = equal(await sha(data.password), await sha(env.ADMIN_PASSWORD || ""));
@@ -55,8 +57,15 @@ async function session(req, env) {
   if (!header.startsWith("Bearer ") || header.length > 160) return false;
   const value = header.slice(7);
   if (!/^[0-9a-f]{64}$/.test(value)) return false;
-  const s = await env.DB.prepare("SELECT expires_at FROM sessions WHERE token_hash=?").bind(await sha(value)).first();
-  return !!s && s.expires_at > Date.now();
+  const digest = await sha(value);
+  const s = await env.DB.prepare("SELECT expires_at FROM sessions WHERE token_hash=?").bind(digest).first();
+  const now = Date.now();
+  if (!s || s.expires_at <= now) return false;
+  // Sliding expiration: no need to type the PIN again while this device is used regularly.
+  if (s.expires_at < now + 15 * 86400000) {
+    await env.DB.prepare("UPDATE sessions SET expires_at=? WHERE token_hash=?").bind(now + 30 * 86400000,digest).run();
+  }
+  return true;
 }
 function validateOperation(o, isImport = false) {
   if (!valid(o) || !STORES.has(o.store) || typeof o.id !== "string" || o.id.length < 1 || o.id.length > 128) return "Registro inválido.";
