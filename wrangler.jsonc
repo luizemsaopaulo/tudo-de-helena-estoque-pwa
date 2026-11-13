@@ -1,6 +1,6 @@
 {
   "name": "tudo-de-helena-estoque-api",
-  "account_id": "01ecc50b0e1833a2925104bc0a33d89d",
+  "account_id": "5491223693d8ab2f8073676e0df26469",
   "main": "./cloudflare/worker.js",
   "compatibility_date": "2026-11-10",
   "workers_dev": true,
@@ -8,7 +8,7 @@
     {
       "binding": "DB",
       "database_name": "tudo-de-helena-estoque-db",
-      "database_id": "d596b019-cb7c-427e-8272-3259409cd054"
+      "database_id": "26de154b-7f6f-4c95-a15a-6e6a3ce160a4"
     }
   ]
 }

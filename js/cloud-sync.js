@@ -1,9 +1,9 @@
 "use strict";
 // Cloudflare D1 sync: local-first, explicit first migration and password-protected API.
 (function () {
-  const API = "https://tudo-de-helena-estoque-api.luizemsaopaulo.workers.dev";
-  const TOKEN_KEY = "helena.cloud.token.v1";
-  const BOOT_KEY = "helena.cloud.migrated.v1";
+  const API = "https://tudo-de-helena-estoque-api.tudo-de-helena-luizwl.workers.dev";
+  const TOKEN_KEY = "helena.cloud.lucileneluizwl.token.v3";
+  const BOOT_KEY = "helena.cloud.lucileneluizwl.migrated.v3";
   const STORES = ["products", "rentals", "consumables", "history"];
   let db, appRefresh, dbAll, enabled = false, busy = false, mutating = 0, timer = null;
   let btn, panel, message, loginForm, choices, controls;
