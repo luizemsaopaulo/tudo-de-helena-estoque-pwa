@@ -9,7 +9,8 @@
 - Banco D1 de destino: ID `a07fd805-124a-4853-859b-4ae35f9e5ff3` (esquema existente; zero registros ativos na inspeção em 13/11/2026).
 - Código de API: `cloudflare/worker.js`.
 - Acesso: senha do servidor em segredo `ADMIN_PASSWORD` (NUNCA commitar a senha).
-- Sessões: 30 dias; token aleatório de 256 bits, hash SHA-256 guardado no D1.
+- Sessões: até 30 dias sem uso, renovadas automaticamente nos acessos regulares quando faltam menos de 15 dias; token aleatório de 256 bits, hash SHA-256 guardado no D1. No mesmo navegador, a sessão fica salva sem digitar a senha a cada abertura.
+- O novo login aceita PIN de seis dígitos; é menos resistente que uma senha longa. Com PIN, limita cinco falhas por IP e 80 falhas totais por janela de 15 minutos. O PIN nunca deve entrar no código público: instalar como segredo Cloudflare somente depois da publicação do Worker da Lucilene.
 - Bloqueio: 8 tentativas de senha por IP a cada 15 minutos.
 - Sincronização: local-first com fila IndexedDB; download do servidor a cada 30 segundos.
 - Segurança de dados: a atualização local e sua entrada na fila usam uma única transação; o recebimento da nuvem valida a fila dentro da transação de substituição para evitar sobrescrever edições pendentes.
